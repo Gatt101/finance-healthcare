@@ -13,3 +13,10 @@ export interface ChatState {
   isLoading: boolean;
   error: string | null;
 }
+
+export interface PhilosophicalModel {
+  name: string;
+  isLoaded: boolean;
+  isLoading: boolean;
+  error: string | null;
+}

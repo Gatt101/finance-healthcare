@@ -2,8 +2,9 @@
 import { useState, useCallback, useEffect } from 'react';
 import { Message, MessageRole } from '../types';
 import { toast } from 'sonner';
+import { usePhilosophicalModel } from './usePhilosophicalModel';
 
-// Simulated LLM response for now - would be replaced with actual API call
+// Fallback philosophical prompts when model is not available
 const PHILOSOPHICAL_PROMPTS = [
   "The unexamined life is not worth living. What aspects of your existence have you reflected upon today?",
   "As Socrates would inquire, what is the nature of your question? What assumptions might we be making?",
@@ -21,14 +22,10 @@ const PHILOSOPHICAL_PROMPTS = [
   "Following Descartes' method of doubt, let us question everything we think we know about this subject and rebuild from certainty.",
 ];
 
-const simulatePhilosophicalResponse = async (userMessage: string): Promise<string> => {
-  // This would be replaced with actual API call to LLM
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      const randomIndex = Math.floor(Math.random() * PHILOSOPHICAL_PROMPTS.length);
-      resolve(PHILOSOPHICAL_PROMPTS[randomIndex]);
-    }, 1500);
-  });
+// Fallback to random philosophical prompts when model fails
+const getRandomPhilosophicalResponse = (): string => {
+  const randomIndex = Math.floor(Math.random() * PHILOSOPHICAL_PROMPTS.length);
+  return PHILOSOPHICAL_PROMPTS[randomIndex];
 };
 
 export function usePhilosophyChat() {
@@ -42,6 +39,7 @@ export function usePhilosophyChat() {
   ]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const { model, generateResponse } = usePhilosophicalModel();
 
   const addMessage = useCallback((content: string, role: MessageRole) => {
     const newMessage: Message = {
@@ -65,19 +63,33 @@ export function usePhilosophyChat() {
     setError(null);
     
     try {
-      // This would be replaced with actual API call
-      const response = await simulatePhilosophicalResponse(content);
+      let response: string;
+      
+      // Try to use the HuggingFace model if loaded
+      if (model.isLoaded) {
+        response = await generateResponse(content);
+      } else {
+        // Fallback to predefined responses
+        response = getRandomPhilosophicalResponse();
+      }
+      
       addMessage(response, 'assistant');
     } catch (err) {
+      console.error('Error getting response:', err);
       const errorMessage = err instanceof Error ? err.message : 'An unknown error occurred';
+      
+      // Fallback to predefined philosophical responses
+      const fallbackResponse = getRandomPhilosophicalResponse();
+      addMessage(fallbackResponse, 'assistant');
+      
       setError(errorMessage);
-      toast.error('Could not get a philosophical response', {
-        description: errorMessage,
+      toast.error('Could not process with the AI model', {
+        description: 'Falling back to predefined responses',
       });
     } finally {
       setIsLoading(false);
     }
-  }, [addMessage]);
+  }, [addMessage, model.isLoaded, generateResponse]);
 
   const clearMessages = useCallback(() => {
     setMessages([
@@ -96,5 +108,11 @@ export function usePhilosophyChat() {
     error,
     sendMessage,
     clearMessages,
+    modelStatus: {
+      name: model.name,
+      isLoaded: model.isLoaded,
+      isLoading: model.isLoading,
+      error: model.error
+    }
   };
 }

@@ -3,10 +3,10 @@ import React, { useEffect, useRef } from 'react';
 import ChatMessage from './ChatMessage';
 import ChatInput from './ChatInput';
 import { usePhilosophyChat } from '../hooks/usePhilosophyChat';
-import { MessageSquare, RefreshCw } from 'lucide-react';
+import { MessageSquare, RefreshCw, Brain } from 'lucide-react';
 
 const PhilosophyChatContainer: React.FC = () => {
-  const { messages, isLoading, sendMessage, clearMessages } = usePhilosophyChat();
+  const { messages, isLoading, sendMessage, clearMessages, modelStatus } = usePhilosophyChat();
   const messagesEndRef = useRef<HTMLDivElement>(null);
   
   // Auto scroll to bottom on new messages
@@ -23,6 +23,20 @@ const PhilosophyChatContainer: React.FC = () => {
         <div className="flex items-center space-x-2">
           <MessageSquare className="h-5 w-5 text-wisdom-600" />
           <h2 className="font-medium text-philosopher-800">Philosophical Dialogue</h2>
+          
+          {/* Model status indicator */}
+          <div className="ml-2 flex items-center">
+            <div className={`h-2 w-2 rounded-full mr-2 ${
+              modelStatus.isLoading ? 'bg-yellow-400 animate-pulse' : 
+              modelStatus.isLoaded ? 'bg-green-400' : 
+              'bg-red-400'
+            }`}></div>
+            <span className="text-xs text-philosopher-500">
+              {modelStatus.isLoading ? 'Loading Model...' : 
+               modelStatus.isLoaded ? 'Model Ready' : 
+               'Using Fallback'}
+            </span>
+          </div>
         </div>
         <button
           onClick={clearMessages}
