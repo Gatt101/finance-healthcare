@@ -1,15 +1,11 @@
 
 import { useState, useEffect, useCallback } from 'react';
-import { pipeline, env } from '@huggingface/transformers';
+import { pipeline } from '@huggingface/transformers';
 import { toast } from 'sonner';
 import { PhilosophicalModel } from '../types';
 
-// Enable using WebGPU for better performance if available
-env.useBrowserCache = true;
-env.allowLocalModels = true;
-
-// Use a smaller philosophical model suitable for browser
-const MODEL_ID = 'onnx-community/distilgpt2';
+// Use a smaller model specifically compatible with browsers
+const MODEL_ID = 'Xenova/distilgpt2';  // Changed to use the Xenova namespace which has browser-optimized models
 
 export function usePhilosophicalModel() {
   const [model, setModel] = useState<PhilosophicalModel>({
@@ -27,9 +23,10 @@ export function usePhilosophicalModel() {
       try {
         console.log('Loading philosophical model from HuggingFace...');
         
-        // Try to use WebGPU if available, fallback to CPU
-        const device = 'webgpu';
-        const textGenerator = await pipeline('text-generation', MODEL_ID, { device });
+        // Try to use CPU since WebGPU might not be supported in all environments
+        const textGenerator = await pipeline('text-generation', MODEL_ID, { 
+          quantized: true, // Use quantized models for better performance
+        });
         
         setGenerator(textGenerator);
         setModel(prev => ({ 
@@ -39,6 +36,9 @@ export function usePhilosophicalModel() {
         }));
         
         console.log('Philosophical model loaded successfully!');
+        toast.success('Philosophical model loaded', {
+          description: 'Ready for deep conversations'
+        });
       } catch (error) {
         console.error('Failed to load model:', error);
         const errorMessage = error instanceof Error ? error.message : 'Unknown error loading the model';
@@ -73,11 +73,11 @@ export function usePhilosophicalModel() {
 
     try {
       // Create a philosophical prompt
-      const philosophicalPrompt = `Question: ${prompt}\n\nA philosophical response that references great thinkers:`;
+      const philosophicalPrompt = `Question: ${prompt}\n\nA philosophical response:`;
       
       // Generate text
       const result = await generator(philosophicalPrompt, {
-        max_length: 100,
+        max_new_tokens: 100, // Changed from max_length to max_new_tokens
         temperature: 0.7,
         top_p: 0.9,
         repetition_penalty: 1.2,

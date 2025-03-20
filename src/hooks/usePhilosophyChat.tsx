@@ -31,7 +31,7 @@ const getRandomPhilosophicalResponse = (): string => {
 export function usePhilosophyChat() {
   const [messages, setMessages] = useState<Message[]>([
     {
-      id: '1',
+      id: 'welcome-message',  // Using a fixed string ID for the welcome message
       content: "Welcome, seeker of wisdom. I am your philosophical companion. What existential questions or philosophical inquiries shall we explore today?",
       role: 'assistant',
       timestamp: new Date(),
@@ -43,7 +43,7 @@ export function usePhilosophyChat() {
 
   const addMessage = useCallback((content: string, role: MessageRole) => {
     const newMessage: Message = {
-      id: Date.now().toString(),
+      id: `${role}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,  // Create a more unique ID
       content,
       role,
       timestamp: new Date(),
@@ -94,7 +94,7 @@ export function usePhilosophyChat() {
   const clearMessages = useCallback(() => {
     setMessages([
       {
-        id: '1',
+        id: 'welcome-message',  // Using a fixed string ID for the welcome message
         content: "Welcome, seeker of wisdom. I am your philosophical companion. What existential questions or philosophical inquiries shall we explore today?",
         role: 'assistant',
         timestamp: new Date(),
