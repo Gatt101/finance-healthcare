@@ -23,10 +23,8 @@ export function usePhilosophicalModel() {
       try {
         console.log('Loading philosophical model from HuggingFace...');
         
-        // Try to use CPU since WebGPU might not be supported in all environments
-        const textGenerator = await pipeline('text-generation', MODEL_ID, { 
-          quantized: true, // Use quantized models for better performance
-        });
+        // Use default options as 'quantized' is not a recognized property
+        const textGenerator = await pipeline('text-generation', MODEL_ID);
         
         setGenerator(textGenerator);
         setModel(prev => ({ 
