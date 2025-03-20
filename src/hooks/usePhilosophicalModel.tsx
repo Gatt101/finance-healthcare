@@ -1,11 +1,11 @@
 
 import { useState, useEffect, useCallback } from 'react';
-import { pipeline } from '@huggingface/transformers';
+import { pipeline } from '@xenova/transformers';  // Use Xenova's version optimized for browsers
 import { toast } from 'sonner';
 import { PhilosophicalModel } from '../types';
 
-// Use a smaller model specifically compatible with browsers
-const MODEL_ID = 'Xenova/distilgpt2';  // Changed to use the Xenova namespace which has browser-optimized models
+// Use a smaller, browser-compatible model
+const MODEL_ID = 'Xenova/distilgpt2';
 
 export function usePhilosophicalModel() {
   const [model, setModel] = useState<PhilosophicalModel>({
@@ -18,48 +18,55 @@ export function usePhilosophicalModel() {
 
   // Load the model
   useEffect(() => {
+    let isMounted = true; // To prevent state updates on unmounted components
+
     async function loadModel() {
       setModel(prev => ({ ...prev, isLoading: true, error: null }));
+
       try {
         console.log('Loading philosophical model from HuggingFace...');
         
-        // Use default options as 'quantized' is not a recognized property
+        // Load the model using @xenova/transformers pipeline
         const textGenerator = await pipeline('text-generation', MODEL_ID);
         
-        setGenerator(textGenerator);
-        setModel(prev => ({ 
-          ...prev, 
-          isLoaded: true, 
-          isLoading: false 
-        }));
-        
-        console.log('Philosophical model loaded successfully!');
-        toast.success('Philosophical model loaded', {
-          description: 'Ready for deep conversations'
-        });
+        if (isMounted) {
+          setGenerator(() => textGenerator); // Store the generator
+          setModel(prev => ({
+            ...prev,
+            isLoaded: true,
+            isLoading: false
+          }));
+          
+          console.log('Philosophical model loaded successfully!');
+          toast.success('Philosophical model loaded', {
+            description: 'Ready for deep conversations'
+          });
+        }
       } catch (error) {
         console.error('Failed to load model:', error);
         const errorMessage = error instanceof Error ? error.message : 'Unknown error loading the model';
         
-        setModel(prev => ({ 
-          ...prev, 
-          isLoaded: false, 
-          isLoading: false, 
-          error: errorMessage 
-        }));
-        
-        toast.error('Failed to load philosophical model', {
-          description: 'Falling back to predefined responses'
-        });
+        if (isMounted) {
+          setModel(prev => ({
+            ...prev,
+            isLoaded: false,
+            isLoading: false,
+            error: errorMessage
+          }));
+          
+          toast.error('Failed to load philosophical model', {
+            description: 'Falling back to predefined responses'
+          });
+        }
       }
     }
 
     loadModel();
-    
+
     // Cleanup function
     return () => {
+      isMounted = false; // Prevent updates if unmounted
       console.log('Cleaning up philosophical model...');
-      // Any cleanup needed for the model
     };
   }, []);
 
@@ -72,10 +79,10 @@ export function usePhilosophicalModel() {
     try {
       // Create a philosophical prompt
       const philosophicalPrompt = `Question: ${prompt}\n\nA philosophical response:`;
-      
+
       // Generate text
       const result = await generator(philosophicalPrompt, {
-        max_new_tokens: 100, // Changed from max_length to max_new_tokens
+        max_new_tokens: 100, // Use max_new_tokens instead of max_length
         temperature: 0.7,
         top_p: 0.9,
         repetition_penalty: 1.2,
@@ -83,15 +90,15 @@ export function usePhilosophicalModel() {
 
       // Extract the generated text
       let generatedText = result[0].generated_text;
-      
+
       // Clean up the response - remove the prompt and trim
       generatedText = generatedText.replace(philosophicalPrompt, '').trim();
-      
+
       // Return a default if result is too short
       if (generatedText.length < 20) {
         return "As Socrates might say, wisdom begins in wonder. Perhaps we should wonder more about this question.";
       }
-      
+
       return generatedText;
     } catch (error) {
       console.error('Error generating response:', error);
