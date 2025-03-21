@@ -16,8 +16,8 @@ const Navigation: React.FC<NavigationProps> = ({ activeSection, onNavigate }) =>
               onClick={() => onNavigate(index)}
               className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 ${
                 activeSection === index 
-                  ? 'bg-emerald-500 text-white shadow-md' 
-                  : 'hover:bg-emerald-100 text-slate-700'
+                  ? 'bg-emerald-500 text-white shadow-md scale-105' 
+                  : 'hover:bg-emerald-100 text-slate-700 hover:scale-105'
               }`}
             >
               {item}
