@@ -2,7 +2,8 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Message } from '../types';
 import { cn } from '../lib/utils';
-import { User, Brain } from 'lucide-react';
+import { User, Brain, Copy, Check } from 'lucide-react';
+import { toast } from 'sonner';
 
 interface ChatMessageProps {
   message: Message;
@@ -13,6 +14,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message, isLastMessage }) => 
   const messageRef = useRef<HTMLDivElement>(null);
   const [isVisible, setIsVisible] = useState(false);
   const [displayedText, setDisplayedText] = useState('');
+  const [copied, setCopied] = useState(false);
   const isUser = message.role === 'user';
   
   useEffect(() => {
@@ -56,11 +58,18 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message, isLastMessage }) => 
     };
   }, [message.content, isUser, isLastMessage]);
 
+  const copyToClipboard = () => {
+    navigator.clipboard.writeText(message.content);
+    setCopied(true);
+    toast.success("Message copied to clipboard");
+    setTimeout(() => setCopied(false), 2000);
+  };
+
   return (
     <div
       ref={messageRef}
       className={cn(
-        "flex gap-4 p-4 transition-all duration-500",
+        "flex gap-4 p-4 group transition-all duration-500",
         isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10",
         isUser ? "justify-end" : "justify-start"
       )}
@@ -73,22 +82,31 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message, isLastMessage }) => 
       
       <div
         className={cn(
-          "max-w-[80%] md:max-w-[70%] rounded-2xl px-5 py-3.5 shadow-md hover:shadow-lg transition-all duration-300",
+          "relative max-w-[80%] md:max-w-[70%] rounded-2xl px-5 py-3.5 shadow-sm hover:shadow-md transition-all duration-300",
           isUser 
             ? "bg-gradient-to-r from-wisdom-100 to-wisdom-200 text-philosopher-800 hover:-translate-y-0.5" 
-            : "bg-white/90 backdrop-blur-sm border border-philosopher-100/50 hover:-translate-y-0.5"
+            : "bg-white/95 backdrop-blur-sm border border-philosopher-100/50 hover:-translate-y-0.5"
         )}
       >
         {isUser ? (
-          <p className="text-philosopher-900">{message.content}</p>
+          <p className="text-philosopher-900 leading-relaxed">{message.content}</p>
         ) : (
-          <div>
+          <div className="relative">
             <p className="text-philosopher-800 leading-relaxed">
               {displayedText}
               {isLastMessage && displayedText !== message.content && (
                 <span className="cursor-blink ml-0.5">|</span>
               )}
             </p>
+            
+            {!isLastMessage && (
+              <button 
+                onClick={copyToClipboard}
+                className="absolute -top-1 -right-1 p-1.5 rounded-full bg-white border border-philosopher-100 opacity-0 group-hover:opacity-100 transition-opacity duration-300 text-philosopher-500 hover:text-wisdom-600 hover:border-wisdom-300"
+              >
+                {copied ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
+              </button>
+            )}
           </div>
         )}
       </div>

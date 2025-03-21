@@ -92,19 +92,19 @@ const Index: React.FC = () => {
       <div className="min-h-screen w-full bg-gradient-to-br from-slate-50 via-emerald-50 to-sky-50">
         <Navigation activeSection={activeSection} onNavigate={handleNavigate} />
         
-        <div id="hero-section" ref={heroRef}>
+        <div id="hero-section" ref={heroRef} className="transition-opacity duration-500">
           <HeroSection isLoaded={isLoaded} onExplore={() => scrollToContent(featuresRef)} />
         </div>
         
-        <div id="features-section" ref={featuresRef}>
+        <div id="features-section" ref={featuresRef} className="transition-all duration-500">
           <FeaturesSection />
         </div>
         
-        <div id="reports-section" ref={reportsRef}>
+        <div id="reports-section" ref={reportsRef} className="transition-all duration-500">
           <ReportsSection />
         </div>
         
-        <div id="contact-section" ref={contactRef}>
+        <div id="contact-section" ref={contactRef} className="transition-all duration-500">
           <ContactSection />
         </div>
         
