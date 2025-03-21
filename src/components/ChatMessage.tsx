@@ -2,7 +2,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Message } from '../types';
 import { cn } from '../lib/utils';
-import { User, Bot } from 'lucide-react';
+import { User, Brain } from 'lucide-react';
 
 interface ChatMessageProps {
   message: Message;
@@ -60,21 +60,23 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message, isLastMessage }) => 
     <div
       ref={messageRef}
       className={cn(
-        "flex gap-4 p-4 transition-opacity duration-300",
-        isVisible ? "opacity-100" : "opacity-0",
+        "flex gap-4 p-4 transition-all duration-500",
+        isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10",
         isUser ? "justify-end" : "justify-start"
       )}
     >
       {!isUser && (
-        <div className="flex-shrink-0 h-10 w-10 rounded-full bg-wisdom-100 flex items-center justify-center">
-          <Bot className="h-5 w-5 text-wisdom-700" />
+        <div className="flex-shrink-0 h-10 w-10 rounded-full bg-gradient-to-br from-wisdom-100 to-wisdom-300 flex items-center justify-center shadow-md transform hover:scale-110 transition-transform duration-300">
+          <Brain className="h-5 w-5 text-wisdom-700" />
         </div>
       )}
       
       <div
         className={cn(
-          "max-w-[80%] md:max-w-[70%] rounded-2xl px-5 py-3.5 glass-panel",
-          isUser ? "bg-wisdom-100 text-philosopher-800" : "bg-white border border-philosopher-100"
+          "max-w-[80%] md:max-w-[70%] rounded-2xl px-5 py-3.5 shadow-md hover:shadow-lg transition-all duration-300",
+          isUser 
+            ? "bg-gradient-to-r from-wisdom-100 to-wisdom-200 text-philosopher-800 hover:-translate-y-0.5" 
+            : "bg-white/90 backdrop-blur-sm border border-philosopher-100/50 hover:-translate-y-0.5"
         )}
       >
         {isUser ? (
@@ -92,7 +94,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message, isLastMessage }) => 
       </div>
       
       {isUser && (
-        <div className="flex-shrink-0 h-10 w-10 rounded-full bg-philosopher-100 flex items-center justify-center">
+        <div className="flex-shrink-0 h-10 w-10 rounded-full bg-gradient-to-br from-philosopher-100 to-philosopher-300 flex items-center justify-center shadow-md transform hover:scale-110 transition-transform duration-300">
           <User className="h-5 w-5 text-philosopher-700" />
         </div>
       )}
