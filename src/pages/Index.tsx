@@ -2,7 +2,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import FinancialHeader from '../components/FinancialHeader';
 import FinanceReportContainer from '../components/FinanceReportContainer';
-import { ArrowDown, Wallet, DollarSign, LineChart, Building2, CircleHelp, ArrowUpRight } from 'lucide-react';
+import { ArrowDown, Wallet, DollarSign, LineChart, Building2, CircleHelp, ArrowUpRight, Banknote } from 'lucide-react';
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Card, CardContent } from "@/components/ui/card";
 
