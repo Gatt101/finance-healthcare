@@ -44,12 +44,13 @@ const ReportInput: React.FC<ReportInputProps> = ({ onSendPrompt, isLoading }) =>
     }
   }, []);
 
-  // Example prompts to help users
+  // Updated example prompts based on previous user suggestions
   const examplePrompts = [
-    "Analyze telehealth investment opportunities for the next 5 years",
-    "Create a financial report on healthcare startups in the senior care space",
-    "Forecast revenue trends for hospital groups in 2024-2025",
-    "Compare profit margins across pharmacy benefit managers"
+    "What are the top 5 healthcare AI investments for 2024?",
+    "Generate quarterly forecast for telehealth stocks",
+    "Compare ROI of hospital management software vendors",
+    "Analyze Medicare reimbursement trends for 2023-2025",
+    "Recommend defensive healthcare stocks for market volatility"
   ];
 
   const useExamplePrompt = (example: string, index: number) => {
