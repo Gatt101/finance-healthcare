@@ -20,3 +20,10 @@ export interface PhilosophicalModel {
   isLoading: boolean;
   error: string | null;
 }
+
+export interface FinancialModel {
+  name: string;
+  isLoaded: boolean;
+  isLoading: boolean;
+  error: string | null;
+}
