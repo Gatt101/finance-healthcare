@@ -1,6 +1,6 @@
 
 import React, { useState, useRef, useEffect } from 'react';
-import { Send, Loader2 } from 'lucide-react';
+import { Send, Loader2, Lightbulb, Sparkles } from 'lucide-react';
 
 interface ReportInputProps {
   onSendPrompt: (prompt: string) => void;
@@ -9,6 +9,8 @@ interface ReportInputProps {
 
 const ReportInput: React.FC<ReportInputProps> = ({ onSendPrompt, isLoading }) => {
   const [prompt, setPrompt] = useState('');
+  const [isFocused, setIsFocused] = useState(false);
+  const [activePrompt, setActivePrompt] = useState<number | null>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   
   const handleSubmit = (e: React.FormEvent) => {
@@ -16,6 +18,7 @@ const ReportInput: React.FC<ReportInputProps> = ({ onSendPrompt, isLoading }) =>
     if (prompt.trim() && !isLoading) {
       onSendPrompt(prompt);
       setPrompt('');
+      setActivePrompt(null);
     }
   };
 
@@ -49,8 +52,9 @@ const ReportInput: React.FC<ReportInputProps> = ({ onSendPrompt, isLoading }) =>
     "Compare profit margins across pharmacy benefit managers"
   ];
 
-  const useExamplePrompt = (example: string) => {
+  const useExamplePrompt = (example: string, index: number) => {
     setPrompt(example);
+    setActivePrompt(index);
     if (inputRef.current) {
       inputRef.current.focus();
     }
@@ -59,12 +63,24 @@ const ReportInput: React.FC<ReportInputProps> = ({ onSendPrompt, isLoading }) =>
   return (
     <div className="space-y-3">
       <div className="flex flex-wrap gap-2 justify-center">
+        <div className="flex items-center gap-1 text-emerald-700 mb-2 text-sm">
+          <Lightbulb className="h-4 w-4" />
+          <span>Try these examples:</span>
+        </div>
+      </div>
+      
+      <div className="flex flex-wrap gap-2 justify-center animate-fade-in">
         {examplePrompts.map((example, index) => (
           <button
             key={index}
-            onClick={() => useExamplePrompt(example)}
-            className="text-xs px-3 py-1.5 bg-emerald-100 text-emerald-800 rounded-full hover:bg-emerald-200 transition-colors"
+            onClick={() => useExamplePrompt(example, index)}
+            className={`text-xs px-3 py-1.5 rounded-full transition-all duration-300 transform hover:scale-105 ${
+              activePrompt === index 
+                ? 'bg-emerald-500 text-white shadow-md' 
+                : 'bg-emerald-100 text-emerald-800 hover:bg-emerald-200'
+            }`}
           >
+            {activePrompt === index && <Sparkles className="h-3 w-3 inline mr-1" />}
             {example}
           </button>
         ))}
@@ -72,15 +88,21 @@ const ReportInput: React.FC<ReportInputProps> = ({ onSendPrompt, isLoading }) =>
       
       <form 
         onSubmit={handleSubmit}
-        className="relative flex flex-col w-full max-w-4xl mx-auto bg-white/80 backdrop-blur-sm border border-emerald-100 rounded-2xl p-2 shadow-sm transition-all duration-200 focus-within:shadow-md"
+        className={`relative flex flex-col w-full max-w-4xl mx-auto backdrop-blur-sm rounded-2xl p-2 shadow-sm transition-all duration-300 ${
+          isFocused 
+            ? 'bg-white shadow-md border border-emerald-300' 
+            : 'bg-white/80 border border-emerald-100'
+        }`}
       >
         <textarea
           ref={inputRef}
           value={prompt}
           onChange={(e) => setPrompt(e.target.value)}
           onKeyDown={handleKeyDown}
+          onFocus={() => setIsFocused(true)}
+          onBlur={() => setIsFocused(false)}
           placeholder="Describe the healthcare financial report or analysis you need..."
-          className="resize-none outline-none bg-transparent px-4 py-3 max-h-32 text-slate-800 placeholder:text-slate-400"
+          className="resize-none outline-none bg-transparent px-4 py-3 max-h-32 text-slate-800 placeholder:text-slate-400 transition-colors"
           disabled={isLoading}
           rows={1}
         />
@@ -91,7 +113,13 @@ const ReportInput: React.FC<ReportInputProps> = ({ onSendPrompt, isLoading }) =>
           <button
             type="submit"
             disabled={!prompt.trim() || isLoading}
-            className="rounded-xl p-2 bg-emerald-600 text-white hover:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 flex items-center justify-center"
+            className={`rounded-xl p-2 text-white transition-all duration-300 flex items-center justify-center ${
+              !prompt.trim() 
+                ? 'bg-slate-300 cursor-not-allowed' 
+                : isLoading 
+                  ? 'bg-emerald-400 animate-pulse' 
+                  : 'bg-emerald-600 hover:bg-emerald-700 hover:shadow-md'
+            }`}
           >
             {isLoading ? (
               <Loader2 className="h-5 w-5 animate-spin" />

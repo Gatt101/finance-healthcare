@@ -1,16 +1,47 @@
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import FinancialHeader from '../components/FinancialHeader';
 import FinanceReportContainer from '../components/FinanceReportContainer';
+import { ArrowDown } from 'lucide-react';
 
 const Index: React.FC = () => {
+  const [isLoaded, setIsLoaded] = useState(false);
+  const [showScrollIndicator, setShowScrollIndicator] = useState(false);
+  
+  // Add some loading effects
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsLoaded(true);
+    }, 300);
+    
+    return () => clearTimeout(timer);
+  }, []);
+  
+  // Show scroll indicator after load
+  useEffect(() => {
+    if (isLoaded) {
+      const timer = setTimeout(() => {
+        setShowScrollIndicator(true);
+      }, 1500);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [isLoaded]);
+  
+  // Scroll to main content
+  const scrollToContent = () => {
+    document.getElementById('main-content')?.scrollIntoView({ behavior: 'smooth' });
+  };
+  
   return (
     <div className="min-h-screen w-full bg-gradient-to-br from-slate-50 via-emerald-50 to-sky-50">
       <div className="container px-4 mx-auto max-w-5xl min-h-screen flex flex-col">
-        <FinancialHeader />
+        <div className={`transition-all duration-700 ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
+          <FinancialHeader />
+        </div>
         
-        <main className="flex-1 flex flex-col items-center justify-center py-6">
-          <div className="text-center mb-8">
+        <main id="main-content" className="flex-1 flex flex-col items-center justify-center py-6">
+          <div className={`text-center mb-8 transition-all duration-700 delay-100 ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
             <p className="text-sm font-medium text-emerald-600 tracking-wider uppercase mb-2">
               <span className="inline-block px-3 py-1 rounded-full bg-emerald-100 animate-pulse-subtle">
                 Healthcare Financial Intelligence
@@ -24,10 +55,22 @@ const Index: React.FC = () => {
             </p>
           </div>
           
-          <FinanceReportContainer />
+          <div className={`w-full transition-all duration-700 delay-200 ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
+            <FinanceReportContainer />
+          </div>
         </main>
         
-        <footer className="py-4 text-center text-slate-400 text-sm">
+        {/* Scroll indicator */}
+        {showScrollIndicator && (
+          <div 
+            className="fixed bottom-8 left-1/2 transform -translate-x-1/2 bg-emerald-500 text-white p-3 rounded-full cursor-pointer shadow-lg animate-bounce hover:bg-emerald-600 transition-colors"
+            onClick={scrollToContent}
+          >
+            <ArrowDown className="h-5 w-5" />
+          </div>
+        )}
+        
+        <footer className={`py-4 text-center text-slate-400 text-sm transition-all duration-700 delay-300 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}>
           <p>&copy; {new Date().getFullYear()} Healthcare FinanceInsights • Data-driven decisions for healthcare investors</p>
         </footer>
       </div>
