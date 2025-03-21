@@ -1,8 +1,7 @@
-
 import React, { useState, useEffect, useRef } from 'react';
 import FinancialHeader from '../components/FinancialHeader';
 import FinanceReportContainer from '../components/FinanceReportContainer';
-import { ArrowDown, Wallet, DollarSign, LineChart, Building2, CircleHelp, ArrowUpRight, Banknote } from 'lucide-react';
+import { ArrowDown, Wallet, DollarSign, LineChart, Building2, CircleHelp, ArrowUpRight } from 'lucide-react';
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Card, CardContent } from "@/components/ui/card";
 
@@ -15,7 +14,6 @@ const Index: React.FC = () => {
   const reportsRef = useRef<HTMLDivElement>(null);
   const contactRef = useRef<HTMLDivElement>(null);
   
-  // Add some loading effects
   useEffect(() => {
     const timer = setTimeout(() => {
       setIsLoaded(true);
@@ -24,7 +22,6 @@ const Index: React.FC = () => {
     return () => clearTimeout(timer);
   }, []);
   
-  // Show scroll indicator after load
   useEffect(() => {
     if (isLoaded) {
       const timer = setTimeout(() => {
@@ -35,12 +32,10 @@ const Index: React.FC = () => {
     }
   }, [isLoaded]);
   
-  // Scroll to main content
   const scrollToContent = (ref: React.RefObject<HTMLDivElement>) => {
     ref.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
-  // Intersection observer for detecting active section
   useEffect(() => {
     const observerOptions = {
       threshold: 0.2,
@@ -82,7 +77,6 @@ const Index: React.FC = () => {
   return (
     <ScrollArea className="w-full h-screen">
       <div className="min-h-screen w-full bg-gradient-to-br from-slate-50 via-emerald-50 to-sky-50">
-        {/* Fixed navigation */}
         <nav className="fixed top-6 left-1/2 transform -translate-x-1/2 z-50 flex items-center p-2 glass-panel rounded-full shadow-lg bg-white/70 backdrop-blur-md border border-white/30">
           <ul className="flex space-x-2">
             {['Overview', 'Features', 'Reports', 'Contact'].map((item, index) => (
@@ -109,7 +103,6 @@ const Index: React.FC = () => {
           </ul>
         </nav>
         
-        {/* Hero Section */}
         <div id="hero-section" ref={heroRef} className="min-h-screen w-full flex flex-col justify-center relative overflow-hidden">
           <div className="container px-4 mx-auto max-w-5xl">
             <div className={`transition-all duration-700 ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
@@ -127,12 +120,10 @@ const Index: React.FC = () => {
             </div>
           </div>
           
-          {/* Abstract shapes in background */}
           <div className="absolute top-[15%] right-[10%] w-64 h-64 bg-gradient-to-br from-emerald-300/30 to-sky-300/30 rounded-full blur-3xl animate-float"></div>
           <div className="absolute bottom-[20%] left-[5%] w-80 h-80 bg-gradient-to-tr from-emerald-400/20 to-sky-400/20 rounded-full blur-3xl animate-float delay-1000"></div>
         </div>
         
-        {/* Features Section */}
         <div id="features-section" ref={featuresRef} className="min-h-screen py-20 relative">
           <div className="container px-4 mx-auto max-w-6xl">
             <div className="text-center mb-16">
@@ -192,7 +183,6 @@ const Index: React.FC = () => {
           </div>
         </div>
         
-        {/* Report Section */}
         <div id="reports-section" ref={reportsRef} className="min-h-screen py-12 relative">
           <div className="container px-4 mx-auto max-w-6xl">
             <div className="text-center mb-8">
@@ -210,7 +200,6 @@ const Index: React.FC = () => {
           </div>
         </div>
         
-        {/* Contact Section */}
         <div id="contact-section" ref={contactRef} className="min-h-[60vh] py-16 relative">
           <div className="container px-4 mx-auto max-w-5xl">
             <div className="glass-panel p-8 rounded-3xl border-none shadow-xl">
@@ -255,7 +244,6 @@ const Index: React.FC = () => {
           </div>
         </div>
         
-        {/* Scroll indicator */}
         {showScrollIndicator && (
           <div 
             className="fixed bottom-8 left-1/2 transform -translate-x-1/2 bg-emerald-500 text-white p-3 rounded-full cursor-pointer shadow-lg animate-bounce hover:bg-emerald-600 transition-colors z-10"
@@ -265,13 +253,12 @@ const Index: React.FC = () => {
           </div>
         )}
         
-        {/* Footer */}
         <footer className="py-10 bg-slate-900 text-white">
           <div className="container px-6 mx-auto max-w-5xl">
             <div className="flex flex-col md:flex-row justify-between items-center gap-6">
               <div className="text-center md:text-left">
                 <div className="flex items-center justify-center md:justify-start gap-2 mb-2">
-                  <Banknote className="h-6 w-6 text-emerald-400" />
+                  <DollarSign className="h-6 w-6 text-emerald-400" />
                   <h2 className="text-xl font-bold">HealthcareFinanceInsights</h2>
                 </div>
                 <p className="text-slate-400 text-sm">
@@ -329,3 +316,4 @@ const Index: React.FC = () => {
 };
 
 export default Index;
+
